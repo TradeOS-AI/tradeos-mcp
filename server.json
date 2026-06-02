@@ -34,7 +34,7 @@
       "environmentVariables": [
         {
           "name": "TRADEOS_ACCESS_TOKEN",
-          "description": "OAuth Bearer for mcp-call. Run: npx tradeos-mcp-test-oauth, then paste the printed token.",
+          "description": "OAuth Bearer for mcp-call. Run: npx -y @tradeos/tradeos-mcp-test tradeos-mcp-test-oauth, then paste the printed token.",
           "format": "string",
           "isRequired": true,
           "isSecret": true

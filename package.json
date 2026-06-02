@@ -13,10 +13,11 @@
     "url": "git+https://github.com/TradeOS-AI/tradeos-mcp.git"
   },
   "bin": {
-    "tradeos-mcp-test": "build/index.js",
-    "tradeos-mcp-test-oauth": "scripts/fetch-token.mjs"
+    "tradeos-mcp-test": "bin/tradeos-mcp-test.js",
+    "tradeos-mcp-test-oauth": "bin/tradeos-mcp-test-oauth.js"
   },
   "files": [
+    "bin",
     "build",
     "scripts/fetch-token.mjs",
     "server.json"

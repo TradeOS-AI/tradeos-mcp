@@ -1,5 +1,6 @@
 # Publish tradeos-mcp to npm + MCP Registry on version tags.
-# https://modelcontextprotocol.io/registry/github-actions
+# npm: Trusted Publishing (OIDC) — no NPM_TOKEN. Configure on npmjs.com first.
+# MCP: https://modelcontextprotocol.io/registry/github-actions
 
 name: Publish to MCP Registry
 
@@ -11,7 +12,7 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     permissions:
-      id-token: write
+      id-token: write # Required for npm + MCP Registry OIDC
       contents: read
 
     steps:
@@ -21,11 +22,9 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v5
         with:
-          node-version: "lts/*"
+          # npm Trusted Publishing needs npm >= 11.5.1 (bundled with Node 24+)
+          node-version: "24"
           registry-url: "https://registry.npmjs.org"
-        env:
-          # Must be set here (not only on publish) so setup-node writes .npmrc auth
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Install dependencies
         run: npm ci
@@ -45,10 +44,6 @@ jobs:
 
       - name: Publish package to npm
         run: |
-          if [ -z "${NODE_AUTH_TOKEN:-}" ]; then
-            echo "::error::GitHub secret NPM_TOKEN is missing or empty. Add an npm automation token in repo Settings → Secrets."
-            exit 1
-          fi
           VERSION="${{ steps.version.outputs.version }}"
           # Prerelease (e.g. 1.0.0-alpha.1) must not use dist-tag "latest"
           if [[ "$VERSION" == *-* ]]; then
@@ -59,8 +54,6 @@ jobs:
           else
             npm publish --access public
           fi
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Install mcp-publisher
         run: |
