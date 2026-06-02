@@ -19,7 +19,7 @@
     {
       "registryType": "npm",
       "registryBaseUrl": "https://registry.npmjs.org",
-      "identifier": "@tradeos-ai/tradeos-mcp-test",
+      "identifier": "@tradeos/tradeos-mcp-test",
       "version": "1.0.0",
       "runtimeHint": "npx",
       "runtimeArguments": [

@@ -25,7 +25,7 @@ tradeos-skills/
 
 **Cursor / other clients**
 
-- MCP: use the same URL as `.mcp.json`, or stdio via `npx -y @tradeos-ai/tradeos-mcp-test` (see [../README.md](../README.md)).
+- MCP: use the same URL as `.mcp.json`, or stdio via `npx -y @tradeos/tradeos-mcp-test` (see [../README.md](../README.md)).
 - Skill only: copy `skills/analyze` into `.cursor/skills/analyze`.
 
 ## MCP endpoint
@@ -40,7 +40,7 @@ Stdio alternative (npm package in parent repo):
 
 ```bash
 npx tradeos-mcp-test-oauth   # print TRADEOS_ACCESS_TOKEN
-npx -y @tradeos-ai/tradeos-mcp-test
+npx -y @tradeos/tradeos-mcp-test
 ```
 
 ## Docs

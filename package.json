@@ -1,5 +1,5 @@
 {
-  "name": "@tradeos-ai/tradeos-mcp-test",
+  "name": "@tradeos/tradeos-mcp-test",
   "version": "1.0.0",
   "description": "[TEST] stdio MCP bridge to TradeOS mcp-call (https://ai.tradeos.xyz). Publish as TradeOS-AI org member 0xFar777.",
   "type": "module",
