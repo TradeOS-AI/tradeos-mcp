@@ -30,13 +30,28 @@ jobs:
       - name: Build package
         run: npm run build
 
-      - name: Sync server.json version from tag
+      - name: Sync version from tag
+        id: version
         run: |
           VERSION="${GITHUB_REF#refs/tags/v}"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
           node scripts/sync-registry-version.mjs "$VERSION"
 
+      - name: Verify package before publish
+        run: node scripts/verify-registry.mjs
+
       - name: Publish package to npm
-        run: npm publish --access public
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          # Prerelease (e.g. 1.0.0-test) must not use dist-tag "latest"
+          if [[ "$VERSION" == *-* ]]; then
+            DIST_TAG="${VERSION#*-}"
+            DIST_TAG="${DIST_TAG%%.*}"
+            echo "Prerelease $VERSION → npm dist-tag: $DIST_TAG"
+            npm publish --access public --tag "$DIST_TAG"
+          else
+            npm publish --access public
+          fi
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
