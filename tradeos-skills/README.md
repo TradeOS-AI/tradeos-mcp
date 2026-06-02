@@ -39,8 +39,8 @@ https://ai.tradeos.xyz/api/agent/mcp/mcp-call
 Stdio alternative (npm package in parent repo):
 
 ```bash
-npx tradeos-mcp-test-oauth   # print TRADEOS_ACCESS_TOKEN
-npx -y @tradeos/tradeos-mcp-test
+npx -y @tradeos/tradeos-mcp-test@alpha tradeos-mcp-test-oauth   # print TRADEOS_ACCESS_TOKEN
+npx -y @tradeos/tradeos-mcp-test@alpha
 ```
 
 ## Docs
