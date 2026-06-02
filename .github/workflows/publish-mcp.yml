@@ -1,6 +1,5 @@
 # Publish tradeos-mcp to npm + MCP Registry on version tags.
-# npm: Trusted Publishing (OIDC) when NPM_TOKEN is unset; or set NPM_TOKEN (Automation) as fallback.
-# MCP: https://modelcontextprotocol.io/registry/github-actions
+# https://modelcontextprotocol.io/registry/github-actions
 
 name: Publish to MCP Registry
 
@@ -12,29 +11,20 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     permissions:
-      id-token: write # Required for npm + MCP Registry OIDC
+      id-token: write
       contents: read
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
 
-      # OIDC only when NPM_TOKEN is not set (requires npm Trusted Publisher on @tradeos)
-      - name: Set up Node.js (Trusted Publishing)
-        if: ${{ secrets.NPM_TOKEN == '' }}
+      - name: Set up Node.js
         uses: actions/setup-node@v5
         with:
-          node-version: "24"
-          registry-url: "https://registry.npmjs.org"
-
-      # Classic Automation token (same as alpha.1 if that publish succeeded)
-      - name: Set up Node.js (NPM_TOKEN)
-        if: ${{ secrets.NPM_TOKEN != '' }}
-        uses: actions/setup-node@v5
-        with:
-          node-version: "24"
+          node-version: "lts/*"
           registry-url: "https://registry.npmjs.org"
         env:
+          # Must be set here (not only on publish) so setup-node writes .npmrc auth
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Install dependencies
@@ -54,9 +44,11 @@ jobs:
         run: node scripts/verify-registry.mjs
 
       - name: Publish package to npm
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
+          if [ -z "${NODE_AUTH_TOKEN:-}" ]; then
+            echo "::error::GitHub secret NPM_TOKEN is missing or empty. Add an npm automation token in repo Settings → Secrets."
+            exit 1
+          fi
           VERSION="${{ steps.version.outputs.version }}"
           # Prerelease (e.g. 1.0.0-alpha.1) must not use dist-tag "latest"
           if [[ "$VERSION" == *-* ]]; then
@@ -67,6 +59,8 @@ jobs:
           else
             npm publish --access public
           fi
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Install mcp-publisher
         run: |
