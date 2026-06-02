@@ -1,0 +1,10 @@
+node_modules/
+build/
+*.log
+*.pdf
+.env
+.env.local
+registry.local.env
+mcp-publisher
+mcp-publisher.exe
+mcp-publisher.tar.gz
