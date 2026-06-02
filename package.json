@@ -37,7 +37,7 @@
     "modelcontextprotocol",
     "test"
   ],
-  "license": "ISC",
+  "license": "MIT",
   "engines": {
     "node": ">=18"
   },
