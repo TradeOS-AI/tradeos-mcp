@@ -12,7 +12,7 @@
   "remotes": [
     {
       "type": "streamable-http",
-      "url": "https://ai.tradeos.xyz/api/agent/mcp/mcp-call"
+      "url": "https://ai-agent-preview.tradeos.xyz/api/agent/mcp/mcp-call"
     }
   ],
   "packages": [

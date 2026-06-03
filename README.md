@@ -11,10 +11,10 @@ This repo publishes **`@tradeos/tradeos-mcp-test`** on npm: a **stdio MCP bridge
 | **HTTP** (recommended) | Cursor, Claude Code, most MCP clients       | Browser OAuth in the client    |
 | **npm stdio**          | Clients that only support `command` / stdio | `TRADEOS_ACCESS_TOKEN` env var |
 
-Production endpoint (both modes ultimately call this):
+Preview endpoint (test branch; both modes ultimately call this):
 
 ```text
-https://ai.tradeos.xyz/api/agent/mcp/mcp-call
+https://ai-agent-preview.tradeos.xyz/api/agent/mcp/mcp-call
 ```
 
 Product docs: [TradeOS MCP integration & usage](https://tradeos.gitbook.io/tradeosaifaq/tradeos-mcp-integration-and-usage)
@@ -41,7 +41,7 @@ Edit user config `~/.cursor/mcp.json` (Windows: `%USERPROFILE%\.cursor\mcp.json`
 {
   "mcpServers": {
     "tradeos": {
-      "url": "https://ai.tradeos.xyz/api/agent/mcp/mcp-call"
+      "url": "https://ai-agent-preview.tradeos.xyz/api/agent/mcp/mcp-call"
     }
   }
 }
@@ -154,7 +154,7 @@ node ~/tradeos-mcp-run/node_modules/@tradeos/tradeos-mcp-test/build/index.js
 Success:
 
 ```text
-[tradeos-mcp-test] remote: https://ai.tradeos.xyz/api/agent/mcp/mcp-call
+[tradeos-mcp-test] remote: https://ai-agent-preview.tradeos.xyz/api/agent/mcp/mcp-call
 [tradeos-mcp-test] stdio bridge ready
 ```
 

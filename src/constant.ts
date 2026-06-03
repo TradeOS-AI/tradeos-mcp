@@ -1,11 +1,12 @@
-/** TradeOS production endpoints (not overridable via env). */
+/** TradeOS preview endpoints (test branch; not overridable via env). */
 
 export const TRADEOS_CONFIG = {
-  baseUrl: "https://ai.tradeos.xyz",
+  baseUrl: "https://ai-agent-preview.tradeos.xyz",
   mcpCallPath: "/api/agent/mcp/mcp-call",
   authorizePath: "/api/agent/mcp/mcp-authorize",
   tokenPath: "/api/agent/mcp/mcp-token",
-  mcpCallUrl: "https://ai.tradeos.xyz/api/agent/mcp/mcp-call",
+  mcpCallUrl:
+    "https://ai-agent-preview.tradeos.xyz/api/agent/mcp/mcp-call",
 } as const;
 
 /** OAuth loopback (see `scripts/fetch-token.mjs`). */

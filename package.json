@@ -1,7 +1,7 @@
 {
   "name": "@tradeos/tradeos-mcp-test",
   "version": "1.0.0",
-  "description": "[TEST] stdio MCP bridge to TradeOS mcp-call (https://ai.tradeos.xyz). Publish as TradeOS-AI org member 0xFar777.",
+  "description": "[TEST] stdio MCP bridge to TradeOS preview mcp-call (https://ai-agent-preview.tradeos.xyz). Publish as TradeOS-AI org member 0xFar777.",
   "type": "module",
   "main": "build/index.js",
   "mcpName": "io.github.TradeOS-AI/tradeos-mcp-test",

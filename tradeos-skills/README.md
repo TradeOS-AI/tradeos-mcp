@@ -1,6 +1,6 @@
 # tradeos-skills
 
-Claude Code **plugin** for [TradeOS](https://ai.tradeos.xyz): MCP connection + **`/tradeos:analyze`** skill (symbol search, My Agent, chart TA, macro/news).
+Claude Code **plugin** for [TradeOS preview](https://ai-agent-preview.tradeos.xyz): MCP connection + **`/tradeos:analyze`** skill (symbol search, My Agent, chart TA, macro/news).
 
 Follows the [Claude Code plugins guide](https://code.claude.com/docs/en/plugins) and [community marketplace submission](https://code.claude.com/docs/en/plugins#submit-your-plugin-to-the-community-marketplace).
 
@@ -20,7 +20,7 @@ tradeos-skills/                 ← plugin root (not inside .claude-plugin/)
 | File                                                       | Role                                                     |
 | ---------------------------------------------------------- | -------------------------------------------------------- |
 | [`.claude-plugin/plugin.json`](.claude-plugin/plugin.json) | Plugin identity (`name`: `tradeos`), version, MCP wiring |
-| [`.mcp.json`](.mcp.json)                                   | `https://ai.tradeos.xyz/api/agent/mcp/mcp-call`          |
+| [`.mcp.json`](.mcp.json)                                   | `https://ai-agent-preview.tradeos.xyz/api/agent/mcp/mcp-call` |
 | [`skills/analyze/SKILL.md`](skills/analyze/SKILL.md)       | Tool picker + workflows for TradeOS MCP                  |
 
 > **Do not** put `skills/`, `.mcp.json`, etc. inside `.claude-plugin/` — only `plugin.json` belongs there.
@@ -38,7 +38,7 @@ claude --plugin-dir ./tradeos-skills
 In Claude Code:
 
 1. Enable the plugin if prompted.
-2. Complete **OAuth** when TradeOS MCP connects (sign in at https://ai.tradeos.xyz/mcp).
+2. Complete **OAuth** when TradeOS MCP connects (sign in at https://ai-agent-preview.tradeos.xyz/mcp).
 3. Run `/reload-plugins` after editing `SKILL.md` or `plugin.json`.
 4. Try the skill: **`/tradeos:analyze`** (namespace = `plugin.json` → `name`).
 5. Confirm MCP tools with `mcp_health` or `/mcp`.
