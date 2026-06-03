@@ -6,6 +6,6 @@
     "name": "TradeOS-AI"
   },
   "repository": "https://github.com/TradeOS-AI/tradeos-mcp",
-  "homepage": "https://tradeos.gitbook.io/tradeosaifaq/tradeos-mcp-integration-and-usage",
+  "homepage": "https://ai.tradeos.xyz",
   "mcpServers": "./.mcp.json"
 }
