@@ -27,7 +27,7 @@ tradeos-skills/                 ← plugin root (not inside .claude-plugin/)
 
 ---
 
-## Local development & test
+## Local development
 
 From the **repo root** (parent of `tradeos-skills/`):
 

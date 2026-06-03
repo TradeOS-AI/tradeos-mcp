@@ -11,7 +11,7 @@ const { status, error } = spawnSync(
   { stdio: "inherit", env: process.env, cwd: root },
 );
 if (error) {
-  console.error(`[tradeos-mcp-test-oauth] ${error.message}`);
+  console.error(`[tradeos-mcp-oauth] ${error.message}`);
   process.exit(1);
 }
 process.exit(status ?? 1);

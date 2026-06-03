@@ -18,8 +18,8 @@ export const OAUTH_CONFIG = {
 
 export const BRIDGE_CONFIG = {
   accessTokenEnv: "TRADEOS_ACCESS_TOKEN",
-  server: { name: "tradeos-mcp-test", version: "1.0.0" },
-  client: { name: "tradeos-mcp-test-bridge", version: "1.0.0" },
+  server: { name: "tradeos-mcp", version: "1.0.0" },
+  client: { name: "tradeos-mcp-bridge", version: "1.0.0" },
   proxyInstructions:
     "TradeOS MCP bridge. All tools are executed on TradeOS via mcp-call.",
 } as const;

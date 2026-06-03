@@ -1,6 +1,6 @@
 /**
  * Dev-only smoke test (not published in npm build output).
- * Usage: pnpm run smoke
+ * Usage: npm run smoke
  */
 import { loadConfig } from "./config.js";
 import { connectRemoteClient } from "./remote-client.js";

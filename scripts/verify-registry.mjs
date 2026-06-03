@@ -55,13 +55,20 @@ if (existsSync(pluginManifestPath)) {
 }
 
 if (!existsSync(join(root, "build", "index.js"))) {
-  errors.push("missing build/index.js — run pnpm run build");
+  errors.push("missing build/index.js — run npm run build");
 } else {
   const constantPath = join(root, "build", "constant.js");
   if (!existsSync(constantPath)) {
-    errors.push("missing build/constant.js — run pnpm run build");
+    errors.push("missing build/constant.js — run npm run build");
   } else {
-    const { TRADEOS_CONFIG } = await import(pathToFileURL(constantPath).href);
+    const { TRADEOS_CONFIG, BRIDGE_CONFIG } = await import(
+      pathToFileURL(constantPath).href,
+    );
+    if (BRIDGE_CONFIG.server.version !== pkg.version) {
+      errors.push(
+        `BRIDGE_CONFIG.server.version (${BRIDGE_CONFIG.server.version}) must equal package.json (${pkg.version}) — run npm run build after sync-registry-version`,
+      );
+    }
     const remoteUrl = server.remotes?.[0]?.url;
     if (remoteUrl && remoteUrl !== TRADEOS_CONFIG.mcpCallUrl) {
       errors.push(

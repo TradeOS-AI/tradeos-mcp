@@ -42,4 +42,18 @@ if (existsSync(pluginPath)) {
   writeFileSync(pluginPath, `${JSON.stringify(plugin, null, 2)}\n`);
 }
 
+const constantPath = join(root, "src", "constant.ts");
+if (existsSync(constantPath)) {
+  let constant = readFileSync(constantPath, "utf8");
+  constant = constant.replace(
+    /(server: \{ name: "tradeos-mcp", version: ")[^"]+(")/,
+    `$1${version}$2`,
+  );
+  constant = constant.replace(
+    /(client: \{ name: "tradeos-mcp-bridge", version: ")[^"]+(")/,
+    `$1${version}$2`,
+  );
+  writeFileSync(constantPath, constant);
+}
+
 console.error(`[sync-registry-version] → ${version}`);

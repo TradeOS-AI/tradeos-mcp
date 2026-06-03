@@ -22,7 +22,7 @@ async function shutdown(
 
 async function main(): Promise<void> {
   const config = loadConfig();
-  console.error(`[tradeos-mcp-test] remote: ${config.mcpCallUrl}`);
+  console.error(`[tradeos-mcp] remote: ${config.mcpCallUrl}`);
 
   const remoteClient = await connectRemoteClient(config);
   const proxyServer = createProxyServer(remoteClient);
@@ -35,11 +35,11 @@ async function main(): Promise<void> {
   process.on("SIGTERM", onSignal);
 
   await proxyServer.connect(stdioTransport);
-  console.error("[tradeos-mcp-test] stdio bridge ready");
+  console.error("[tradeos-mcp] stdio bridge ready");
 }
 
 main().catch((error: unknown) => {
   const message = error instanceof Error ? error.message : String(error);
-  console.error(`[tradeos-mcp-test] fatal: ${message}`);
+  console.error(`[tradeos-mcp] fatal: ${message}`);
   process.exit(1);
 });
