@@ -3,12 +3,12 @@
   "name": "io.github.TradeOS-AI/tradeos-mcp",
   "title": "TradeOS",
   "description": "TradeOS MCP: ticker search, My Agent, chart TA, macro news. npm stdio or HTTP.",
-  "websiteUrl": "https://tradeos.gitbook.io/tradeosaifaq/tradeos-mcp-integration-and-usage",
+  "websiteUrl": "https://ai.tradeos.xyz",
   "repository": {
     "url": "https://github.com/TradeOS-AI/tradeos-mcp",
     "source": "github"
   },
-  "version": "1.0.1",
+  "version": "1.0.2",
   "remotes": [
     {
       "type": "streamable-http",
@@ -20,7 +20,7 @@
       "registryType": "npm",
       "registryBaseUrl": "https://registry.npmjs.org",
       "identifier": "@tradeos/tradeos-mcp",
-      "version": "1.0.1",
+      "version": "1.0.2",
       "runtimeHint": "npx",
       "runtimeArguments": [
         {
