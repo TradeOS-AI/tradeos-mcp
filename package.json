@@ -1,6 +1,6 @@
 {
   "name": "@tradeos/tradeos-mcp",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "stdio MCP bridge to TradeOS mcp-call (https://ai.tradeos.xyz). Ticker search, My Agent, chart TA, macro news.",
   "type": "module",
   "main": "build/index.js",

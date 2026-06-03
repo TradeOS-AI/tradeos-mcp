@@ -1,6 +1,6 @@
 {
   "name": "tradeos",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "TradeOS MCP: symbol search, My Agent, chart TA, and macro/news on ai.tradeos.xyz",
   "author": {
     "name": "TradeOS-AI"
