@@ -1,0 +1,45 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.TradeOS-AI/tradeos-mcp",
+  "title": "TradeOS",
+  "description": "TradeOS MCP: ticker search, My Agent, chart TA, macro news. npm stdio or HTTP.",
+  "websiteUrl": "https://tradeos.gitbook.io/tradeosaifaq/tradeos-mcp-integration-and-usage",
+  "repository": {
+    "url": "https://github.com/TradeOS-AI/tradeos-mcp",
+    "source": "github"
+  },
+  "version": "1.0.0",
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://ai.tradeos.xyz/api/agent/mcp/mcp-call"
+    }
+  ],
+  "packages": [
+    {
+      "registryType": "npm",
+      "registryBaseUrl": "https://registry.npmjs.org",
+      "identifier": "@tradeos/tradeos-mcp",
+      "version": "1.0.0",
+      "runtimeHint": "npx",
+      "runtimeArguments": [
+        {
+          "type": "positional",
+          "value": "-y"
+        }
+      ],
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "TRADEOS_ACCESS_TOKEN",
+          "description": "OAuth Bearer for mcp-call. Run: npx -y @tradeos/tradeos-mcp oauth, then paste the printed token.",
+          "format": "string",
+          "isRequired": true,
+          "isSecret": true
+        }
+      ]
+    }
+  ]
+}

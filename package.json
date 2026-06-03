@@ -1,0 +1,50 @@
+{
+  "name": "@tradeos/tradeos-mcp",
+  "version": "1.0.0",
+  "description": "stdio MCP bridge to TradeOS mcp-call (https://ai.tradeos.xyz). Ticker search, My Agent, chart TA, macro news.",
+  "type": "module",
+  "main": "build/index.js",
+  "mcpName": "io.github.TradeOS-AI/tradeos-mcp",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TradeOS-AI/tradeos-mcp.git"
+  },
+  "bin": {
+    "tradeos-mcp": "bin/tradeos-mcp.js",
+    "tradeos-mcp-oauth": "bin/tradeos-mcp-oauth.js"
+  },
+  "files": [
+    "bin",
+    "build",
+    "scripts/fetch-token.mjs",
+    "server.json"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "build:all": "tsc",
+    "start": "node build/index.js",
+    "oauth:token": "npm run build && node scripts/fetch-token.mjs",
+    "smoke": "npm run build:all && node --env-file=.env build/smoke-remote.js",
+    "registry:verify": "node scripts/verify-registry.mjs",
+    "registry:sync-version": "node scripts/sync-registry-version.mjs"
+  },
+  "keywords": [
+    "mcp",
+    "tradeos",
+    "modelcontextprotocol"
+  ],
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.19.2",
+    "typescript": "^5.9.3"
+  }
+}

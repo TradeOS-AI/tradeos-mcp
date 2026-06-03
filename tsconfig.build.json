@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.json",
+  "include": [
+    "src/constant.ts",
+    "src/index.ts",
+    "src/config.ts",
+    "src/remote-client.ts",
+    "src/proxy-server.ts"
+  ]
+}

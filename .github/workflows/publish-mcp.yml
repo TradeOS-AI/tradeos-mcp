@@ -1,0 +1,73 @@
+# Publish tradeos-mcp to npm + MCP Registry on version tags.
+# https://modelcontextprotocol.io/registry/github-actions
+
+name: Publish to MCP Registry
+
+on:
+  push:
+    tags: ["v*"]
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: "lts/*"
+          registry-url: "https://registry.npmjs.org"
+        env:
+          # Must be set here (not only on publish) so setup-node writes .npmrc auth
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build package
+        run: npm run build
+
+      - name: Sync version from tag
+        id: version
+        run: |
+          VERSION="${GITHUB_REF#refs/tags/v}"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          node scripts/sync-registry-version.mjs "$VERSION"
+
+      - name: Verify package before publish
+        run: node scripts/verify-registry.mjs
+
+      - name: Publish package to npm
+        run: |
+          if [ -z "${NODE_AUTH_TOKEN:-}" ]; then
+            echo "::error::GitHub secret NPM_TOKEN is missing or empty. Add an npm automation token in repo Settings → Secrets."
+            exit 1
+          fi
+          VERSION="${{ steps.version.outputs.version }}"
+          # Prerelease (e.g. 1.0.0-alpha.1) must not use dist-tag "latest"
+          if [[ "$VERSION" == *-* ]]; then
+            DIST_TAG="${VERSION#*-}"
+            DIST_TAG="${DIST_TAG%%.*}"
+            echo "Prerelease $VERSION → npm dist-tag: $DIST_TAG"
+            npm publish --access public --tag "$DIST_TAG"
+          else
+            npm publish --access public
+          fi
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Install mcp-publisher
+        run: |
+          curl -L "https://github.com/modelcontextprotocol/registry/releases/latest/download/mcp-publisher_$(uname -s | tr '[:upper:]' '[:lower:]')_$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/').tar.gz" | tar xz mcp-publisher
+
+      - name: Authenticate to MCP Registry
+        run: ./mcp-publisher login github-oidc
+
+      - name: Publish server to MCP Registry
+        run: ./mcp-publisher publish
