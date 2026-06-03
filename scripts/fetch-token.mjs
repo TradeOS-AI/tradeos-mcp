@@ -3,7 +3,8 @@
  * Get TRADEOS_ACCESS_TOKEN via browser OAuth (PKCE + loopback callback).
  *
  * Usage:
- *   npx -y @tradeos/tradeos-mcp-test tradeos-mcp-test-oauth
+ *   npx -y @tradeos/tradeos-mcp-test oauth
+ *   npx -y -p @tradeos/tradeos-mcp-test tradeos-mcp-test-oauth
  *   pnpm run oauth:token
  *
  * Opens browser → log in on TradeOS → prints access_token for .env

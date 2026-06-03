@@ -19,13 +19,13 @@ TradeOS exposes **5 MCP tools** on `https://ai.tradeos.xyz`. This skill maps use
 
 ## Tool picker
 
-| User wants | Tool | Not this |
-|------------|------|----------|
-| Check MCP / auth | `mcp_health` | — |
-| Resolve symbol from name or fuzzy text | `search_tickers` | `technical_analysis`, `customize-agent` |
-| Create/list/update/delete My Agent, read **old** report | `customize-agent` | `technical_analysis` for new analysis |
-| **New** chart / TA / trade question | `technical_analysis` | `latest_analysis`, `bloomberg-oracle-terminal` |
-| Macro, news, policy, “why did X move” | `bloomberg-oracle-terminal` | `technical_analysis` |
+| User wants                                              | Tool                        | Not this                                       |
+| ------------------------------------------------------- | --------------------------- | ---------------------------------------------- |
+| Check MCP / auth                                        | `mcp_health`                | —                                              |
+| Resolve symbol from name or fuzzy text                  | `search_tickers`            | `technical_analysis`, `customize-agent`        |
+| Create/list/update/delete My Agent, read **old** report | `customize-agent`           | `technical_analysis` for new analysis          |
+| **New** chart / TA / trade question                     | `technical_analysis`        | `latest_analysis`, `bloomberg-oracle-terminal` |
+| Macro, news, policy, “why did X move”                   | `bloomberg-oracle-terminal` | `technical_analysis`                           |
 
 ## Default workflows
 
@@ -126,12 +126,12 @@ One `ticker` string: `"<tickerA> / <tickerB>"` (spaces around `/`).
 
 ## Errors (common)
 
-| Signal | Action |
-|--------|--------|
-| `unauthorized` | Reconnect MCP OAuth or refresh `TRADEOS_ACCESS_TOKEN` |
-| `invalid_input` | Fix action name, required fields, enums |
-| balance / rate_limit / service_busy | Tell user to check TradeOS account quota |
-| Missing tool | Confirm MCP server is TradeOS, not another bridge |
+| Signal                              | Action                                                |
+| ----------------------------------- | ----------------------------------------------------- |
+| `unauthorized`                      | Reconnect MCP OAuth or refresh `TRADEOS_ACCESS_TOKEN` |
+| `invalid_input`                     | Fix action name, required fields, enums               |
+| balance / rate_limit / service_busy | Tell user to check TradeOS account quota              |
+| Missing tool                        | Confirm MCP server is TradeOS, not another bridge     |
 
 ## Do not
 
