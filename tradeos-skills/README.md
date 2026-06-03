@@ -53,11 +53,16 @@ claude plugin init my-tradeos   # creates ~/.claude/skills/my-tradeos/ — use a
 
 ## Validate before submit
 
-From `tradeos-skills/` (or pass the plugin path):
+From the plugin root (`tradeos-skills/`):
 
 ```bash
-cd tradeos-skills
-claude plugin validate
+claude plugin validate .
+```
+
+From the **repo root**:
+
+```bash
+claude plugin validate ./tradeos-skills
 ```
 
 Fix any reported issues. The community review pipeline runs the same check plus automated safety screening.
@@ -75,7 +80,7 @@ Anthropic hosts two public marketplaces ([docs](https://code.claude.com/docs/en/
 
 **Submission steps**
 
-1. Run `claude plugin validate` locally (above).
+1. Run `claude plugin validate .` locally (from `tradeos-skills/`).
 2. Submit via one of:
    - **Claude.ai**: [claude.ai/settings/plugins/submit](https://claude.ai/settings/plugins/submit)
    - **Console**: [platform.claude.com/plugins/submit](https://platform.claude.com/plugins/submit)
