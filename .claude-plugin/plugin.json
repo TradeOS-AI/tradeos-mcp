@@ -2,11 +2,12 @@
   "name": "tradeos",
   "version": "1.0.3",
   "description": "TradeOS MCP: symbol search, My Agent, chart TA, and macro/news on ai.tradeos.xyz",
-  "icon": "./icon.png",
+  "icon": "https://ai.tradeos.xyz/tradeos.png",
   "author": {
     "name": "TradeOS-AI"
   },
   "repository": "https://github.com/TradeOS-AI/tradeos-mcp",
   "homepage": "https://ai.tradeos.xyz",
+  "privacyPolicyUrl": "https://ai.tradeos.xyz/privacy-policy",
   "mcpServers": "./.mcp.json"
 }
