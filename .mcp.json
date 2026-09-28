@@ -1,6 +1,7 @@
 {
   "mcpServers": {
     "tradeos": {
+      "type": "http",
       "url": "https://ai.tradeos.xyz/api/agent/mcp/mcp-call"
     }
   }
