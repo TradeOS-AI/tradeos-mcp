@@ -4,6 +4,10 @@ Claude Code **plugin** for [TradeOS](https://ai.tradeos.xyz): agentic technical 
 
 Follows the [Claude Code plugins guide](https://code.claude.com/docs/en/plugins) and [community marketplace submission](https://code.claude.com/docs/en/plugins#submit-your-plugin-to-the-community-marketplace).
 
+## Connect TradeOS after installation
+
+In Claude, open **Settings → Connectors**, find **TradeOS**, enable it if it is off, click **Connect**, and sign in. In Claude Code, run `/mcp`, select **tradeos**, choose **Connect**, and complete sign-in. If you cannot find a TradeOS tool, first check that the connector is enabled. If a tool returns `unauthorized`, connect or reconnect and sign in, then retry your request.
+
 ## Plugin layout
 
 ```text
@@ -44,7 +48,7 @@ claude --plugin-dir .
 In Claude Code:
 
 1. Enable the plugin if prompted.
-2. Complete **OAuth** when TradeOS MCP connects (sign in at https://ai.tradeos.xyz/mcp).
+2. Run `/mcp`, connect **tradeos**, and complete sign-in.
 3. Run `/reload-plugins` after editing `SKILL.md` or `plugin.json`.
 4. Try the skill: **`/tradeos:analyze`** (namespace = `plugin.json` → `name`).
 5. Confirm MCP tools with `mcp_health` or `/mcp`.

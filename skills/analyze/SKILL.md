@@ -5,10 +5,12 @@ description: >-
   (Ticker-Analyze), macro/news, spread vs benchmark (SPY, XAUUSD), multi-symbol
   ranking, strategy/indicator/timeframe selection. Use when the user asks about
   TradeOS, tickers, chart TA, relative strength, portfolio screening, My Agent,
-  or market headlines — and TradeOS MCP is available.
+  or market headlines.
 ---
 
 # TradeOS analyze
+
+If you cannot find a TradeOS tool, first check whether the TradeOS connector is enabled. Guide the user to **Settings → Connectors → TradeOS** in Claude, or `/mcp` → **tradeos** in Claude Code, and ask them to enable or connect it. If a tool returns `unauthorized`, guide the user to **Connect** and sign in there. Once the tools are available and authorized, retry `mcp_health` and the user's request. Do not stop at the missing-tool or authorization error.
 
 TradeOS exposes **5 MCP tools** on `https://ai.tradeos.xyz`. This skill maps user intent to the correct tool, argument shape, and analysis playbook.
 
@@ -805,7 +807,8 @@ NASDAQ | NYSE | CRYPTO | NYSE Arca | NYSE American
 
 | Signal                             | Meaning                                   | Fix                                                   |
 | ---------------------------------- | ----------------------------------------- | ----------------------------------------------------- |
-| `unauthorized`                     | Bearer auth failed                        | Reconnect MCP OAuth or refresh `TRADEOS_ACCESS_TOKEN` |
+| TradeOS tool not found             | Connector may be disabled                 | Check that TradeOS is enabled in Settings → Connectors (Claude Code: `/mcp`) |
+| `unauthorized`                     | TradeOS authorization failed              | Guide the user through Connectors → Connect (Claude Code: `/mcp`); for stdio only, refresh `TRADEOS_ACCESS_TOKEN` |
 | `invalid_input`                    | Bad action, missing field, or wrong enum  | Check §4 enums; verify required fields per action     |
 | `search_tickers_failed`            | Search service error                      | Retry; simplify `q`                                   |
 | `customize_agent_failed`           | Agent CRUD error                          | Check payload shape; nested vs flat args              |
