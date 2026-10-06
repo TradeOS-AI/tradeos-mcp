@@ -1,6 +1,6 @@
 # tradeos-skills
 
-Claude Code **plugin** for [TradeOS](https://ai.tradeos.xyz): MCP connection + **`/tradeos:analyze`** skill (symbol search, My Agent, chart TA, macro/news).
+Claude Code **plugin** for [TradeOS](https://ai.tradeos.xyz): agentic technical analysis of XAUUSD and other markets, plus no-code AI trading agents for 24/7 smart alerts. Includes the **`/tradeos:analyze`** skill, ticker search, spread comparisons, and macro/news context.
 
 Follows the [Claude Code plugins guide](https://code.claude.com/docs/en/plugins) and [community marketplace submission](https://code.claude.com/docs/en/plugins#submit-your-plugin-to-the-community-marketplace).
 
@@ -27,7 +27,7 @@ tradeos-mcp/                    ← plugin root (not inside .claude-plugin/)
 
 > **Do not** put `skills/`, `.mcp.json`, etc. inside `.claude-plugin/` — only `plugin.json` belongs there.
 
-Plugin icon: [TradeOS logo](https://ai.tradeos.xyz/tradeos.png). Privacy policy: [TradeOS privacy policy](https://ai.tradeos.xyz/privacy-policy).
+Plugin icon: [TradeOS logo](https://cdn.tradeos.xyz/frontend/tradeos-mcp.png). Privacy policy: [TradeOS privacy policy](https://ai.tradeos.xyz/privacy-policy).
 
 ---
 
