@@ -1,8 +1,8 @@
 {
   "name": "tradeos",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "TradeOS MCP for Claude Code: agentic technical analysis of XAUUSD, stocks, crypto, and forex with multi-timeframe charts, ticker search, and macro context. Build AI trading agents for 24/7 smart alerts—no coding required.",
-  "icon": "https://cdn.tradeos.xyz/frontend/tradeos-mcp.png",
+  "icon": "./logo.png",
   "author": {
     "name": "TradeOS-AI"
   },

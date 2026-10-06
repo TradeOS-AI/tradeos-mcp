@@ -11,6 +11,7 @@ tradeos-mcp/                    ← plugin root (not inside .claude-plugin/)
 ├── .claude-plugin/
 │   └── plugin.json             # manifest only
 ├── .mcp.json                   # MCP: Streamable HTTP + OAuth
+├── logo.png                    # Plugin icon
 ├── LICENSE                     # MIT license
 ├── skills/
 │   └── analyze/
@@ -22,12 +23,13 @@ tradeos-mcp/                    ← plugin root (not inside .claude-plugin/)
 | ---------------------------------------------------------- | -------------------------------------------------------- |
 | [`.claude-plugin/plugin.json`](.claude-plugin/plugin.json) | Plugin identity (`name`: `tradeos`), version, MCP wiring |
 | [`.mcp.json`](.mcp.json)                                   | `https://ai.tradeos.xyz/api/agent/mcp/mcp-call`          |
+| [`logo.png`](logo.png)                                     | Plugin icon                                              |
 | [`LICENSE`](LICENSE)                                       | MIT license                                              |
 | [`skills/analyze/SKILL.md`](skills/analyze/SKILL.md)       | Tool picker + workflows for TradeOS MCP                  |
 
 > **Do not** put `skills/`, `.mcp.json`, etc. inside `.claude-plugin/` — only `plugin.json` belongs there.
 
-Plugin icon: [TradeOS logo](https://cdn.tradeos.xyz/frontend/tradeos-mcp.png). Privacy policy: [TradeOS privacy policy](https://ai.tradeos.xyz/privacy-policy).
+Plugin icon: [TradeOS logo](logo.png). Privacy policy: [TradeOS privacy policy](https://ai.tradeos.xyz/privacy-policy).
 
 ---
 
