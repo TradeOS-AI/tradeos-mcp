@@ -1,116 +1,49 @@
-# tradeos-skills
+# TradeOS ChatGPT plugin
 
-Claude Code **plugin** for [TradeOS](https://ai.tradeos.xyz): agentic technical analysis of XAUUSD and other markets, plus no-code AI trading agents for 24/7 smart alerts. Includes the **`/tradeos:analyze`** skill, ticker search, spread comparisons, and macro/news context.
+TradeOS connects ChatGPT to agentic technical analysis for XAUUSD, stocks, crypto, and forex. Search tickers, compare spreads, review macro and news context, and create no-code TradeOS agents that can monitor market conditions for 24/7 smart alerts.
 
-Follows the [Claude Code plugins guide](https://code.claude.com/docs/en/plugins) and [community marketplace submission](https://code.claude.com/docs/en/plugins#submit-your-plugin-to-the-community-marketplace).
+This repository follows the [OpenAI plugin packaging guide](https://developers.openai.com/plugins/build/plugins).
 
-## Plugin layout
+## Package layout
 
 ```text
-tradeos-mcp/                    ← plugin root (not inside .claude-plugin/)
-├── .claude-plugin/
-│   └── plugin.json             # manifest only
-├── .mcp.json                   # MCP: Streamable HTTP + OAuth
-├── logo.png                    # Plugin icon
-├── LICENSE                     # MIT license
+tradeos-mcp/
+├── plugin.json                 # Portable plugin manifest and ChatGPT listing metadata
+├── mcp.json                    # Remote Streamable HTTP MCP connection
 ├── skills/
 │   └── analyze/
-│       └── SKILL.md            # /tradeos:analyze
+│       └── SKILL.md            # TradeOS analysis workflows
+├── assets/
+│   └── logo.png                # Listing and composer icon
+├── LICENSE
 └── README.md
 ```
 
-| File                                                       | Role                                                     |
-| ---------------------------------------------------------- | -------------------------------------------------------- |
-| [`.claude-plugin/plugin.json`](.claude-plugin/plugin.json) | Plugin identity (`name`: `tradeos`), version, MCP wiring |
-| [`.mcp.json`](.mcp.json)                                   | `https://ai.tradeos.xyz/api/agent/mcp/mcp-call`          |
-| [`logo.png`](logo.png)                                     | Plugin icon                                              |
-| [`LICENSE`](LICENSE)                                       | MIT license                                              |
-| [`skills/analyze/SKILL.md`](skills/analyze/SKILL.md)       | Tool picker + workflows for TradeOS MCP                  |
+The root `plugin.json` uses the Agent Plugins schema. ChatGPT discovers the `analyze` skill from `skills/` and the remote TradeOS server from `mcp.json`. Listing text, starter prompts, legal links, and icon paths are under `extensions.com.openai.interface`.
 
-> **Do not** put `skills/`, `.mcp.json`, etc. inside `.claude-plugin/` — only `plugin.json` belongs there.
+## Connect in ChatGPT
 
-Plugin icon: [TradeOS logo](logo.png). Privacy policy: [TradeOS privacy policy](https://ai.tradeos.xyz/privacy-policy).
+1. Open **ChatGPT Plugins** and choose **Add custom MCP server**.
+2. Enter `https://ai.tradeos.xyz/api/agent/mcp/mcp-call` and complete the TradeOS OAuth connection.
+3. Use the `analyze` skill for ticker search, multi-timeframe technical analysis, spread comparison, macro/news context, and custom agent workflows.
 
----
+The repository contains no access token. The remote MCP server handles authentication.
 
-## Local development
+## Create the ZIP
 
-From the **repo root**:
+From the repository root, run:
 
 ```bash
-claude --plugin-dir .
+zip -r -X tradeos-chatgpt-plugin.zip plugin.json mcp.json skills assets LICENSE README.md
 ```
 
-In Claude Code:
+The archive has `plugin.json` and `mcp.json` at its root and excludes local Git files and the unused `.example.env`.
 
-1. Enable the plugin if prompted.
-2. Complete **OAuth** when TradeOS MCP connects (sign in at https://ai.tradeos.xyz/mcp).
-3. Run `/reload-plugins` after editing `SKILL.md` or `plugin.json`.
-4. Try the skill: **`/tradeos:analyze`** (namespace = `plugin.json` → `name`).
-5. Confirm MCP tools with `mcp_health` or `/mcp`.
+For a public directory submission, use the **With MCP** path and upload this ZIP. The [OpenAI submission guide](https://developers.openai.com/plugins/deploy/submission) covers the dashboard, server review, and publication steps. Creating the ZIP does not publish the plugin.
 
-Optional: scaffold-style init for personal copy:
+## TradeOS resources
 
-```bash
-claude plugin init my-tradeos   # creates ~/.claude/skills/my-tradeos/ — use as reference only
-```
-
----
-
-## Validate before submit
-
-From the plugin root (repo root):
-
-```bash
-claude plugin validate .
-```
-
-Fix any reported issues. The community review pipeline runs the same check plus automated safety screening.
-
----
-
-## Submit to the community marketplace
-
-Anthropic hosts two public marketplaces ([docs](https://code.claude.com/docs/en/plugins#submit-your-plugin-to-the-community-marketplace)):
-
-| Marketplace                   | Notes                                                  |
-| ----------------------------- | ------------------------------------------------------ |
-| **`claude-plugins-official`** | Anthropic-curated; no public application               |
-| **`claude-community`**        | Third-party plugins after review → `@claude-community` |
-
-**Submission steps**
-
-1. Run `claude plugin validate .` locally (from the repo root).
-2. Submit via one of:
-   - **Claude.ai**: [claude.ai/settings/plugins/submit](https://claude.ai/settings/plugins/submit)
-   - **Console**: [platform.claude.com/plugins/submit](https://platform.claude.com/plugins/submit)
-3. After approval, the plugin is pinned in [`anthropics/claude-plugins-community`](https://github.com/anthropics/claude-plugins-community) (catalog: [marketplace.json](https://github.com/anthropics/claude-plugins-community/blob/main/.claude-plugin/marketplace.json)).
-4. Public catalog syncs **nightly** — there may be a delay before install works.
-
-**Users install from community marketplace**
-
-```text
-/plugin marketplace add anthropics/claude-plugins-community
-/plugin install @claude-community/tradeos
-```
-
-(Exact install name follows the catalog entry after approval.)
-
----
-
-## analyze skill
-
-[`skills/analyze/SKILL.md`](skills/analyze/SKILL.md) teaches Claude when and how to call TradeOS MCP tools:
-
-- `mcp_health`, `search_tickers`, `customize-agent`, `technical_analysis`, `bloomberg-oracle-terminal`
-- Default workflows (single-symbol TA, macro/news, etc.)
-
-Requires TradeOS MCP connected (plugin loads it via `.mcp.json`).
-
----
-
-## Other clients (Cursor, Codex, ChatGPT)
-
-This repository is a **Claude Code plugin**. For other clients, see the TradeOS MCP product docs below.
-
-Product docs: [TradeOS MCP (GitBook)](https://tradeos.gitbook.io/tradeosaifaq/tradeos-mcp-integration-and-usage)
+- [TradeOS MCP product page](https://www.tradeos.xyz/mcp)
+- [TradeOS FAQ](https://www.tradeos.xyz/faq)
+- [Privacy policy](https://ai.tradeos.xyz/privacy-policy)
+- [Terms of service](https://ai.tradeos.xyz/terms-of-service)
