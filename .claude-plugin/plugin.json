@@ -8,6 +8,24 @@
   },
   "repository": "https://github.com/TradeOS-AI/tradeos-mcp",
   "homepage": "https://ai.tradeos.xyz",
+  "documentationUrl": "https://tradeos.gitbook.io/tradeosaifaq/tradeos-mcp-integration-and-usage",
+  "supportUrl": "https://tradeos.gitbook.io/tradeosaifaq/tradeos-ai-faq-en",
   "privacyPolicyUrl": "https://ai.tradeos.xyz/privacy-policy",
+  "termsOfServiceUrl": "https://ai.tradeos.xyz/terms-of-service",
+  "license": "MIT",
+  "keywords": [
+    "technical analysis",
+    "trading",
+    "AI trading agents",
+    "stocks",
+    "crypto",
+    "forex",
+    "gold",
+    "multi-timeframe analysis",
+    "spread analysis",
+    "market news",
+    "macro analysis",
+    "smart alerts"
+  ],
   "mcpServers": "./.mcp.json"
 }
