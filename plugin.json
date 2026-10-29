@@ -37,6 +37,59 @@
         ],
         "composerIcon": "./assets/logo.png",
         "logo": "./assets/logo.png"
+      },
+      "review": {
+        "test_cases": {
+          "positive": [
+            {
+              "description": "Search market tickers for Apple.",
+              "prompt": "Find Apple's stock ticker.",
+              "tools_triggered": "search_tickers",
+              "expected_behavior": "Search for Apple and return its ticker, AAPL."
+            },
+            {
+              "description": "Get the last 5 daily market candles for AAPL.",
+              "prompt": "Show the last 5 daily candles for AAPL.",
+              "tools_triggered": "get_market_candles",
+              "expected_behavior": "Request AAPL with interval 1D and limit 5, and show the returned OHLCV candles."
+            },
+            {
+              "description": "Get the latest market snapshot for AAPL.",
+              "prompt": "Show the latest market snapshot for AAPL.",
+              "tools_triggered": "get_market_snapshot",
+              "expected_behavior": "Request AAPL and summarize the returned market snapshot."
+            },
+            {
+              "description": "Search for Apple's market ticker and get its market snapshot.",
+              "prompt": "Find Apple's stock ticker, then show its latest market snapshot.",
+              "tools_triggered": "search_tickers, get_market_snapshot",
+              "expected_behavior": "Search for Apple, use the returned ticker AAPL to request a market snapshot, and summarize it."
+            },
+            {
+              "description": "Get 1D market technical analysis for AAPL.",
+              "prompt": "Give me a 1D technical analysis of AAPL.",
+              "tools_triggered": "get_market_technical_analysis",
+              "expected_behavior": "Request AAPL with mainWindow 1D and the user's question, then summarize the returned analysis."
+            }
+          ],
+          "negative": [
+            {
+              "description": "Explain a financial concept without requesting market data.",
+              "prompt": "Explain what the relative strength index measures in plain English. I only want a conceptual explanation, with no current prices or chart analysis.",
+              "expected_behavior": "Answer directly without calling TradeOS tools because the request is for a general definition."
+            },
+            {
+              "description": "Calculate returns from user-supplied numbers.",
+              "prompt": "I bought a stock at $100 and sold it at $110. What is my percentage return before fees?",
+              "expected_behavior": "Calculate a 10% return from the supplied values without calling TradeOS tools; no instrument lookup or market data is needed."
+            },
+            {
+              "description": "Handle an order-placement request without invoking analysis tools.",
+              "prompt": "Buy 10 shares of AAPL in my brokerage account right now. I am asking you to place the order, not analyze the stock.",
+              "expected_behavior": "Make no TradeOS tool calls. Explain that this plugin provides market data and analysis and cannot place the requested order. Do not claim that an order was submitted or executed."
+            }
+          ]
+        }
       }
     }
   }
