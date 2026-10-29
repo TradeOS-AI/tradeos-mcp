@@ -1,424 +1,183 @@
 ---
 name: analyze
 description: >-
-  Use TradeOS MCP for symbol search, My Agent CRUD, live chart technical analysis
-  (Ticker-Analyze), macro/news, spread vs benchmark (SPY, XAUUSD), multi-symbol
-  ranking, strategy/indicator/timeframe selection. Use when the user asks about
-  TradeOS, tickers, chart TA, relative strength, portfolio screening, My Agent,
-  or market headlines — and TradeOS MCP is available.
+  Use TradeOS MCP for ticker search, historical price and volume candles,
+  market snapshots, and chart technical analysis of stocks, crypto, forex, and
+  metals, including spread and relative-strength comparisons. Use when the user
+  requests these market-data or technical-analysis workflows and TradeOS MCP is
+  available.
 ---
 
 # TradeOS analyze
 
-TradeOS exposes **5 MCP tools** on `https://ai.tradeos.xyz`. This skill maps user intent to the correct tool, argument shape, and analysis playbook.
+Use the connected TradeOS tools for market data and technical analysis:
 
-## Contents
+| User wants | Tool |
+| --- | --- |
+| Find an instrument by name or partial ticker | `search_tickers` |
+| Historical prices or trading volume | `get_market_candles` |
+| Latest available price, daily change, or market activity | `get_market_snapshot` |
+| Chart interpretation, trend, support/resistance, or indicators | `get_market_technical_analysis` |
 
-| #   | Section                                                                   |
-| --- | ------------------------------------------------------------------------- |
-| 1   | [Prerequisites](#1-prerequisites)                                         |
-| 2   | [Tool picker](#2-tool-picker)                                             |
-| 3   | [Tool usage](#3-tool-usage)                                               |
-| 4   | [Parameters and enums](#4-parameters-and-enums)                           |
-| 5   | [Common errors and wrong use cases](#5-common-errors-and-wrong-use-cases) |
+Resolve ambiguous instruments before requesting data or analysis, and use the exact ticker returned by search.
 
----
+## 1. Ticker search
 
-## 1. Prerequisites
-
-1. TradeOS MCP is connected — run `mcp_health` first after OAuth.
-2. Never pass `userId` in tool arguments (OAuth injects it).
-
----
-
-## 2. Tool picker
-
-| #   | User wants                                                 | Tool                        | Not this                                       |
-| --- | ---------------------------------------------------------- | --------------------------- | ---------------------------------------------- |
-| 2.1 | Check MCP / auth                                           | `mcp_health`                | —                                              |
-| 2.2 | Resolve symbol from name or fuzzy text                     | `search_tickers`            | `technical_analysis`, `customize-agent`        |
-| 2.3 | Create/list/update/delete My Agent; read **stored** report | `customize-agent`           | `technical_analysis` for new analysis          |
-| 2.4 | **New** chart / TA / trade question                        | `technical_analysis`        | `latest_analysis`, `bloomberg-oracle-terminal` |
-| 2.5 | Macro, news, policy, “why did X move”                      | `bloomberg-oracle-terminal` | `technical_analysis`                           |
-
-**Default call chain:** `search_tickers` → `customize-agent` (optional) → `technical_analysis`
-
----
-
-## 3. Tool usage
-
-Each subsection below is a **how-to** for one tool (`mcp_health` omitted — call with no args after OAuth).
-
----
-
-### 3.1 `search_tickers`
-
-**Purpose:** Symbol lookup only. Read-only — no agents, LLM, or charts.
-
-**When to use**
-
-- User gives a company name, alias, or partial ticker.
-- Disambiguate before `customize-agent` or `technical_analysis`.
-- Resolve **each leg** of a spread (`assetA` and `assetB` separately).
-
-**When NOT to use**
-
-- Chart TA → `technical_analysis`
-- Agent CRUD → `customize-agent`
-- News / macro → `bloomberg-oracle-terminal`
-
-**How to call**
+Call `search_tickers`:
 
 ```json
-{ "q": "apple", "limit": 5, "exchange": "NASDAQ" }
+{ "query": "apple", "limit": 5, "exchange": "NASDAQ" }
 ```
 
-| Step | Action                                                                   |
-| ---- | ------------------------------------------------------------------------ |
-| 1    | Pass `q` (required). Add `limit` (1–50) or `exchange` filter if helpful. |
-| 2    | Read `data[]` — use exact `ticker` string in later tools.                |
-| 3    | Skip this step if ticker is already exact (e.g. `NASDAQ:AAPL`).          |
+| Field | Contract |
+| --- | --- |
+| `query` | Required, 1–200 characters |
+| `limit` | Optional integer, 1–50; default 5 |
+| `exchange` | Optional: `NASDAQ`, `NYSE`, `CRYPTO`, `NYSE Arca`, `NYSE American` |
 
-**Spread / ratio:** search **each** leg, then join as `"<tickerA> / <tickerB>"` (see §4.6).
+Read `data[]` for `ticker`, `name`, `exchange`, and `isMarketOpen`. The response also includes `ok`, `query`, `limit`, `exchange`, and `count`.
 
-**Response:** `ok`, `query`, `count`, `data[]` (`ticker`, `name`, `exchange`, `score`, `isWatch`, …).
+Common formats are `AAPL` and `SPY` for stocks/ETFs, `C:EURUSD` and `C:XAUUSD` for FX/metals, and `X:BTCUSD` for crypto. Resolve each leg of a spread separately. Skip search when the user already supplies an unambiguous supported ticker.
 
----
+## 2. Historical candles
 
-### 3.2 `customize-agent`
-
-**Purpose:** My Agent CRUD + read last **stored** analysis from DB. Does **not** run a new LLM — use `technical_analysis` for live analysis.
-
-**When to use**
-
-| Action            | Use case                                                              |
-| ----------------- | --------------------------------------------------------------------- |
-| `create`          | Save a reusable agent (ticker, strategy, indicators, prompt, trigger) |
-| `update`          | Change agent config                                                   |
-| `delete`          | Remove an agent                                                       |
-| `get`             | Read one agent's config                                               |
-| `list`            | List all user's agents                                                |
-| `latest_analysis` | Read **previous** stored report only (no new LLM run)                 |
-
-**When NOT to use**
-
-- Fresh chart write-up → `technical_analysis`
-- Symbol lookup → `search_tickers`
-
-**How to call — list agents**
+Call `get_market_candles` for OHLCV data:
 
 ```json
-{ "action": "list" }
+{ "ticker": "AAPL", "interval": "1D", "limit": 30 }
 ```
 
-**How to call — create agent**
+| Field | Contract |
+| --- | --- |
+| `ticker` | Required single ticker or two-ticker ratio (`AAPL / SPY`) or difference (`AAPL - SPY`) |
+| `interval` | Required: `1`, `5`, `15`, `30`, `60`, `240`, `1D`, `1W`, `4W`; also accepts `1m`, `5m`, `15m`, `30m`, `1h`, `4h` |
+| `limit` | Optional integer, 1–1000; default 100 |
+| `startTime` | Optional inclusive UTC Unix timestamp in **seconds** |
+| `endTime` | Optional exclusive UTC Unix timestamp in **seconds**; defaults to now |
 
-| Step | Action                                               |
-| ---- | ---------------------------------------------------- |
-| 1    | `search_tickers` if ticker is ambiguous              |
-| 2    | Choose `interval`, `strategy`, `indicators` (see §4) |
-| 3    | Call `create` with nested or flat args               |
+`startTime` must precede `endTime` and now. `4W` means four weeks.
+
+Read `candles[]` with `timestamp`, `open`, `high`, `low`, `close`, and `volume`. Candle timestamps use UTC seconds. The response includes `ticker`, `interval`, `status`, `count`, `delaySeconds`, `nextEndTime`, and `creditsCharged`.
+
+For older pages, pass a non-null `nextEndTime` as the next request's `endTime`. Stop when `nextEndTime` is null or the requested period is covered. Treat `status: "no_data"` as no available candles. Report `delaySeconds` when freshness matters.
+
+## 3. Market snapshot
+
+Call `get_market_snapshot` for the latest available price and daily activity:
+
+```json
+{ "ticker": "C:XAUUSD" }
+```
+
+`ticker` is required. Supply one stock/ETF ticker such as `AAPL`, FX/metal ticker such as `C:XAUUSD`, or crypto ticker such as `X:BTCUSD`.
+
+Read `status`, `market`, `updatedAt`, `fetchedAt`, `creditsCharged`, and `snapshot`. Available snapshot fields include:
+
+- `dailyPriceChange` and `dailyPriceChangePercent`.
+- `day`, `minute`, and `previousDay` bars with descriptive fields such as `open`, `high`, `low`, `close`, and `volume`.
+- `lastQuote` with `askPrice`, `bidPrice`, and `timestamp`.
+- `lastTrade` with `price`, `volume`, and `timestamp`.
+
+Fields may be absent or null. Use the top-level `updatedAt` and `fetchedAt` fields, in UTC Unix seconds, to describe data freshness. State when data is unavailable or stale. `status: "no_data"` and `snapshot: null` mean no snapshot is available.
+
+## 4. Technical analysis
+
+Call `get_market_technical_analysis`:
 
 ```json
 {
-  "action": "create",
-  "create": {
-    "ticker": "NASDAQ:AAPL",
-    "interval": "1D",
-    "extraWindow": ["1W", "4W"],
-    "strategy": "Trend-Analysis",
-    "indicators": [
-      "Moving Average",
-      "Bollinger Bands",
-      "Relative Strength Index"
-    ],
-    "prompt": "Daily trend and key levels for AAPL.",
-    "trigger": { "condition": [] }
-  }
+  "ticker": "AAPL",
+  "mainWindow": "1D",
+  "extraWindows": ["1W", "4W"],
+  "strategy": "Trend-Analysis",
+  "indicators": [
+    "Moving Average",
+    "Relative Strength Index",
+    "Bollinger Bands"
+  ],
+  "userQuestion": "Assess the daily trend, key support and resistance, momentum, and invalidation level.",
+  "mode": "full"
 }
 ```
 
-**How to call — update / delete / get**
+| Field | Contract |
+| --- | --- |
+| `ticker` | Required, 1–64 characters; one instrument or a spread expression |
+| `mainWindow` | Required interval: `1`, `5`, `15`, `30`, `60`, `240`, `1D`, `1W`, `4W` |
+| `userQuestion` | Required, 1–10000 characters; state the user's analysis question |
+| `extraWindows` | Optional array of up to 8 intervals from the same enum |
+| `strategy` | Optional exact strategy value from the tool schema |
+| `indicators` | Optional array of up to 50 full indicator names from the tool schema |
+| `clientLang` | Optional: `en`, `fr`, `hk`, `ko`, `zh`, `ja` |
+| `mode` | Optional: `full` for detailed analysis (default), `flash` for shorter analysis |
 
-```json
-{
-  "action": "update",
-  "update": { "agentId": "<id>", "strategy": "Smart-Money-Concept" }
-}
-```
+### Choose the analysis setup
 
-```json
-{ "action": "delete", "delete": { "agentId": "<id>" } }
-```
+Match the main interval to the user's horizon:
 
-```json
-{ "action": "get", "get": { "agentId": "<id>" } }
-```
+| Horizon | Common intervals | Example strategy |
+| --- | --- | --- |
+| Short intraday / scalp | `1`, `5`, `15` | `Scalping-EMA` |
+| Intraday / swing | `30`, `60`, `240` | `Smart-Money-Concept` |
+| Daily / position | `1D`, `1W` | `Trend-Analysis`, `Trend-Following` |
+| Longer trend | `1W`, `4W` | `Trend-Analysis` |
 
-**How to call — read stored report (not fresh analysis)**
+Use `Trend-Analysis` for general chart questions when specifying a strategy. Other examples include `Mean-Reversion`, `Range-Bound`, `Squeeze-Momentum`, and `Volatility-Breakout`. Strategy spelling and hyphenation must match the tool schema exactly.
 
-```json
-{
-  "action": "latest_analysis",
-  "latest_analysis": { "agentId": "<id>" }
-}
-```
+Use the indicator names listed in the tool schema, such as `Relative Strength Index` and `Moving Average Convergence Divergence`. A general setup can use `Moving Average`, `Relative Strength Index`, `Bollinger Bands`, and `Average True Range`. For structure questions, consider `Break of Structure`, `Fair Value Gap`, and `Support and Resistance`. See sections 6 and 7 for strategy and indicator guidance.
 
-**After create:** run `technical_analysis` with `action=agent` and `customizeAgentId` from create/list response.
+Frame `userQuestion` around the requested trend, key levels, momentum, volatility, and higher-timeframe alignment. Include an invalidation level when relevant to the user's question.
 
-**Rules**
+### Spreads and relative strength
 
-- Do **not** pass `title` on create (server-generated).
-- `update` requires `agentId` + at least one mutable field; if `indicators` is sent, must be non-empty.
-- Spread ticker: one string `"assetA / assetB"` (see §4.6). Pro users keep full spread on create/update.
+For a ratio chart, use one ticker string: `"<asset> / <benchmark>"`, such as `"AAPL / SPY"`, `"NVDA / QQQ"`, or `"X:BTCUSD / X:ETHUSD"`.
 
----
+1. Resolve each asset and the benchmark with `search_tickers` if ambiguous.
+2. Make one `get_market_technical_analysis` call per pair.
+3. Ask for trend, momentum, and volatility on the ratio chart.
+4. Synthesize the returned analyses into a comparison. If the user requests ranking, state the scoring basis; 0 can represent strong short-spread bias and 100 strong long-spread bias.
 
-### 3.3 `technical_analysis`
+A ratio rising means the numerator outperforms the denominator; it does not by itself mean the numerator's absolute price is rising. Use `get_market_candles` if the user needs the underlying historical values. `get_market_snapshot` accepts single instruments only.
 
-**Purpose:** Live Ticker-Analyze — server captures multi-timeframe chart screenshots for the LLM. Returns `streamPreview` (Markdown) + `screenshotHints[]` (text only).
+### Read the result
 
-**When to use:** Chart TA, levels, strategy framing, trade questions.
+- `analysis`: the returned written technical analysis.
+- `truncated`: whether the analysis is incomplete. Disclose truncation when true.
+- `chartAnalysisLink`: a link to the chart analysis; include it when useful.
+- `screenshotHints`: text notes about the charts used for analysis.
 
-**When NOT to use:** Agent CRUD / stored report → `customize-agent` · symbol search → `search_tickers` · news → `bloomberg-oracle-terminal`.
+Keep returned technical findings distinct from any additional synthesis.
 
-**Two modes**
+## 5. Errors
 
-| Mode     | When                                                                   |
-| -------- | ---------------------------------------------------------------------- |
-| `ad_hoc` | One-off question; pass ticker, mainWindow, strategy, indicators inline |
-| `agent`  | Reuse saved My Agent config from `customize-agent`                     |
+| Error | Action |
+| --- | --- |
+| `unauthorized` | Ask the user to reconnect or sign in through TradeOS OAuth |
+| `invalid_input` | Check the arguments against the tool's parameter schema |
+| `daily_limit_exceeded` | Explain that the account's daily usage limit has been reached |
+| `pro_feature_limit_exceeded` | Explain that the daily trial limit for Pro features has been reached |
+| `insufficient_balance` | Explain that the account has insufficient credits |
+| `tool_failed` | Report the failure; retry only when appropriate to the user's request |
 
-**Time windows — common usage**
-
-| Horizon            | Intervals         | Typical use                                    |
-| ------------------ | ----------------- | ---------------------------------------------- |
-| Short / scalp      | `1`, `5`, `15`    | Intraday entries, quick momentum, tight stops  |
-| Intraday / swing   | `30`, `60`, `240` | Session structure, 1–5 day holds               |
-| Medium / position  | `1D`, `1W`        | Swing to multi-week trend, daily structure     |
-| Long / macro chart | `1W`, `4W`        | Primary trend filter; avoid fighting higher TF |
-
-1. Set **`mainWindow`** to the horizon the user cares about (usually `1D` for equities).
-2. Add **`extraWindows`** top-down for context — e.g. `["4W", "1W", "1D", "60"]` (max 8 on ad_hoc).
-3. Match strategy to primary window — e.g. `Scalping-EMA` on `5`/`15`; `Trend-Following` on `1D`/`1W`; `Smart-Money-Concept` on `60`/`240`/`1D`.
-
-Valid interval enum values: see §4.1.
+When a request fails or returns `no_data`, explain that the requested data is unavailable.
 
 ---
 
-#### 3.3.1 Single asset
+## 6. Strategy reference
 
-One symbol (not a spread). Example: `NASDAQ:AAPL`, `X:BTCUSD`.
-
-**Path A — ad_hoc (one-off, no saved agent)**
-
-| Step | Action                                                                    |
-| ---- | ------------------------------------------------------------------------- |
-| 1    | `search_tickers` unless ticker is exact                                   |
-| 2    | Pick `mainWindow`, optional `extraWindows`, `strategy`, `indicators` (§4) |
-| 3    | Call `technical_analysis` `ad_hoc` with a structured `userQuestion`       |
-
-```json
-{
-  "action": "ad_hoc",
-  "ad_hoc": {
-    "ticker": "NASDAQ:AAPL",
-    "mainWindow": "1D",
-    "extraWindows": ["1W", "4W"],
-    "strategy": "Trend-Analysis",
-    "indicators": [
-      "Moving Average",
-      "Moving Average Convergence Divergence",
-      "Relative Strength Index",
-      "Bollinger Bands"
-    ],
-    "userQuestion": "Is the daily structure still bullish? List key support/resistance, momentum confirmation, and volatility regime."
-  }
-}
-```
-
-**Path B — agent (reusable My Agent)**
-
-| Step | Action                                                                |
-| ---- | --------------------------------------------------------------------- |
-| 1    | `customize-agent` `create` (or `list` existing agent)                 |
-| 2    | `technical_analysis` `agent` with `customizeAgentId` + `userQuestion` |
-
-```json
-{
-  "action": "agent",
-  "agent": {
-    "customizeAgentId": "<from create or list>",
-    "userQuestion": "Trend and key levels on the daily chart?"
-  }
-}
-```
-
-**Suggested `userQuestion` checklist (single asset)**
-
-1. Primary trend on `mainWindow` (bullish / bearish / range)
-2. Key support/resistance and invalidation level
-3. Momentum confirmation or divergence
-4. Volatility regime (compression vs expansion)
-5. _(Optional)_ Higher-TF alignment from `extraWindows`
-
----
-
-#### 3.3.2 Multi asset (spread vs benchmark)
-
-Compare **many symbols against one benchmark** using ratio charts. One `ticker` per pair: `"<symbol> / <benchmark>"`.
-
-**Common benchmarks**
-
-| Benchmark  | When to use                 | Example                   |
-| ---------- | --------------------------- | ------------------------- |
-| SPY / QQQ  | US equities vs broad market | `MSFT / SPY`, `LLY / SPY` |
-| C:XAUUSD   | vs gold / risk-off context  | `AAPL / C:XAUUSD`         |
-| Sector ETF | Peer group                  | `NVDA / QQQ`              |
-
-**Workflow**
-
-| Step | Action                                                                                                       |
-| ---- | ------------------------------------------------------------------------------------------------------------ |
-| 1    | `search_tickers` for **each leg** (every symbol + benchmark once)                                            |
-| 2    | For **each symbol**, one `technical_analysis` `ad_hoc` with spread `ticker`                                  |
-| 3    | Ask trend / momentum / volatility scoring in `userQuestion`                                                  |
-| 4    | **Synthesize** all results: rank composite 0–100 (**0** = strong short spread, **100** = strong long spread) |
-| 5    | _(Optional)_ one `bloomberg-oracle-terminal` call for basket-level macro context                             |
-
-**Example payload (one pair)**
-
-```json
-{
-  "action": "ad_hoc",
-  "ad_hoc": {
-    "ticker": "LLY / SPY",
-    "mainWindow": "1D",
-    "extraWindows": ["1W", "4W"],
-    "strategy": "Trend-Analysis",
-    "indicators": [
-      "Moving Average",
-      "Relative Strength Index",
-      "Moving Average Convergence Divergence",
-      "Bollinger Bands",
-      "Average True Range"
-    ],
-    "userQuestion": "Analyze this spread for trend, momentum, and volatility. Score each 0–100. Summarize bias: long spread, short spread, or neutral."
-  }
-}
-```
-
-**Scoring dimensions** (state explicitly in `userQuestion`)
-
-| Dimension  | Judge on ratio chart                      | Indicators (see §4.5)                                                                                    |
-| ---------- | ----------------------------------------- | -------------------------------------------------------------------------------------------------------- |
-| Trend      | Ratio direction, MA slope, HH/HL vs LH/LL | `Moving Average`, `Ichimoku Cloud`, `Super Trend`, `Average Directional Index`                           |
-| Momentum   | Acceleration vs benchmark                 | `Moving Average Convergence Divergence`, `Relative Strength Index`, `KDJ Oscillator`, `Squeeze Momentum` |
-| Volatility | Band width, ATR expansion, squeeze risk   | `Bollinger Bands`, `Average True Range`, `Z-Score`                                                       |
-
-**Example user prompts**
-
-1. _“Analyze NVDA/QQQ spread for trend, momentum, volatility.”_
-2. _“Analyze LLY, GOOG, AMZN, META, MSFT, GLD, QQQ against SPY (`LLY / SPY`, …), rank 0–100.”_
-
-> Prefer **one `ad_hoc` call per pair** (parallel if host allows). Each call gets its own screenshots and cleaner `streamPreview`.
-
-**Multi asset via saved agents:** create one My Agent per spread pair (`customize-agent` `create` with `"LLY / SPY"`), then `technical_analysis` `agent` for each — same scoring logic in `userQuestion`.
-
----
-
-### 3.4 `bloomberg-oracle-terminal`
-
-**Purpose:** Grounded search for macro / news / policy narrative. Returns Markdown summary — not chart TA.
-
-**When to use**
-
-- Fresh headlines, sector or event context (“why did oil move”, Fed news)
-- Catalyst context **before or after** TA (not instead of chart analysis)
-
-**When NOT to use**
-
-- Per-symbol chart analysis → `technical_analysis`
-- Ticker lookup → `search_tickers`
-- My Agent CRUD → `customize-agent`
-
-**How to call**
-
-```json
-{
-  "query": "Why did NVDA drop this week? Include earnings, AI sector news, and Fed context."
-}
-```
-
-| Step | Action                                                                 |
-| ---- | ---------------------------------------------------------------------- |
-| 1    | Be specific: symbol, dates, region when helpful (`query` 1–2000 chars) |
-| 2    | Read `data.summary` (Markdown) from response                           |
-| 3    | If user also wants chart levels → follow with `technical_analysis`     |
-
-**Response:** `ok`, `data.summary`, `data.query`. Balance checked per account. No screenshots; host may timeout on slow searches.
-
-**Combined workflow (news + chart):**
-
-1. `bloomberg-oracle-terminal` — “why”
-2. `technical_analysis` — “where on the chart”
-
----
-
-## 4. Parameters and enums
-
-All enum values must match **exactly** (case-sensitive). Invalid values → `invalid_input`.
-
----
-
-### 4.1 Intervals (`interval`, `mainWindow`, `extraWindows`, `extraWindow`)
-
-```
-1 | 5 | 15 | 30 | 60 | 240 | 1D | 1W | 4W
-```
-
-**Limits:** `extraWindows` max **8** on ad_hoc; `extraWindow` optional on agent create.
-
----
-
-### 4.2 `customize-agent` actions
-
-```
-create | update | delete | get | list | latest_analysis
-```
-
----
-
-### 4.3 `technical_analysis` actions
-
-```
-agent | ad_hoc
-```
-
-| Action   | Required fields                        |
-| -------- | -------------------------------------- |
-| `agent`  | `customizeAgentId`, `userQuestion`     |
-| `ad_hoc` | `ticker`, `mainWindow`, `userQuestion` |
-
-**Optional (both modes):** `clientLang`, `selectedVisibilityType`
-
----
-
-### 4.4 Strategy enum
-
-Use with `customize-agent` `create`/`update` and `technical_analysis` ad_hoc. **28 values** — spelling and hyphenation must match exactly.
+Use these strategy names in the `strategy` parameter of `get_market_technical_analysis`.
 
 **1. `Quantum-Athena`** · Systematic
 
-- User wants a bundled multi-factor scan without picking a manual setup.
-- Screening many symbols with TradeOS systematic rules.
-- Portfolio-level ranking where a pre-built logic stack is preferred.
+- General market screening.
+- Comparing multiple instruments.
+- Portfolio-level analysis and ranking.
 
 **2. `Chiroptera`** · Systematic
 
 - Recurring chart pattern workflows (flags, bases, recurring setups).
-- User asks for pattern-based analysis with a fixed TradeOS template.
-- Repeatable agent config across similar-looking charts.
+- User asks for pattern-based analysis.
+- Repeatable analysis setup across similar-looking charts.
 
 **3. `Quantum-Valkyrie`** · Systematic
 
@@ -440,7 +199,7 @@ Use with `customize-agent` `create`/`update` and `technical_analysis` ad_hoc. **
 
 **6. `Trend-Analysis`** · Trend / momentum
 
-- **Default choice** for general TA questions.
+- General TA questions.
 - Single-symbol trend, levels, and multi-TF structure.
 - Spread vs benchmark (`AAPL / SPY`) for relative strength.
 - Multi-symbol ranking vs one benchmark (trend / momentum / vol scoring).
@@ -591,9 +350,9 @@ Use with `customize-agent` `create`/`update` and `technical_analysis` ad_hoc. **
 
 ---
 
-### 4.5 Indicator enum
+## 7. Indicator reference
 
-English **full names** only — no abbreviations (e.g. not `RSI`, use `Relative Strength Index`). My Agent: **1–20**; ad_hoc: up to **50**. **26 values** — must match exactly.
+Use these names in the `indicators` parameter. The tool schema lists all supported values and accepts up to 50 indicators.
 
 **1. `Moving Average`** · Trend
 
@@ -672,7 +431,7 @@ English **full names** only — no abbreviations (e.g. not `RSI`, use `Relative 
 
 - Horizontal key levels on any symbol or spread ratio.
 - Universal add-on for entries, stops, targets.
-- Required for `Breakout-Retest`, `Range-Bound`, `SR-Failure-Trap`.
+- Useful for `Breakout-Retest`, `Range-Bound`, and `SR-Failure-Trap`.
 
 **14. `High Low Markers`** · SMC
 
@@ -710,43 +469,37 @@ English **full names** only — no abbreviations (e.g. not `RSI`, use `Relative 
 - `30` / `60` / `240` intraday S/R framework.
 - Opening range context for day trades.
 
-**20. `Footprint`** · Volume
-
-- Intrabar bid/ask aggression and delta-style read.
-- Short TF (`1`/`5`/`15`) order-flow confirmation.
-- Validate breakout or absorption at level.
-
-**21. `News and Fundamentals`** · Context
+**20. `News and Fundamentals`** · Context
 
 - Earnings, guidance, sector news overlay on chart.
 - Catalyst-aware TA when user asks “before/after earnings”.
-- Not a substitute for `bloomberg-oracle-terminal` deep news search.
+- Use for chart context.
 
-**22. `Volume Weighted Average Price`** · Volume
+**21. `Volume Weighted Average Price`** · Volume
 
 - Intraday fair value anchor on `60` / `240`.
 - Mean reversion to VWAP in balanced sessions.
 - Institutional benchmark for day-trade bias (above/below VWAP).
 
-**23. `Break of Structure`** · SMC
+**22. `Break of Structure`** · SMC
 
 - BOS / CHoCH for trend continuation or reversal signal.
 - Core SMC indicator with `Smart-Money-Concept`, `Multi-TF-BOS-Alignment`.
 - Structure shift confirmation before entry.
 
-**24. `Average True Range`** · Volatility
+**23. `Average True Range`** · Volatility
 
 - Stop placement and position sizing by vol.
 - Spread vol scoring in multi-symbol benchmark analysis.
 - Regime: rising ATR = expansion; falling ATR = compression.
 
-**25. `Super Trend`** · Trend
+**24. `Super Trend`** · Trend
 
 - Trailing stop line and trend direction flip.
 - `Trend-Following` and `SuperTrend-Ladder-Pullback` strategies.
 - Simple stay-in-trend vs exit-on-flip rule.
 
-**26. `Premium & Discount`** · SMC
+**25. `Premium & Discount`** · SMC
 
 - Price in upper/lower half of dealing range (premium vs discount).
 - SMC bias: long setups in discount, short in premium (with structure).
@@ -762,89 +515,3 @@ English **full names** only — no abbreviations (e.g. not `RSI`, use `Relative 
 | Swing daily | `Moving Average`, `Moving Average Convergence Divergence`, `Relative Strength Index`, `Ichimoku Cloud`, `Support and Resistance` |
 
 ---
-
-### 4.6 Spread ticker format
-
-| Rule     | Detail                                                                                                      |
-| -------- | ----------------------------------------------------------------------------------------------------------- |
-| Format   | One string: `"<tickerA> / <tickerB>"` (spaces around `/`)                                                   |
-| assetA   | Numerator — symbol you analyze or rank                                                                      |
-| assetB   | Denominator — benchmark                                                                                     |
-| Lookup   | `search_tickers` each leg; use exact codes from `data[]`                                                    |
-| Examples | `MSFT / SPY` · `AAPL / C:XAUUSD` · `X:BTCUSD / X:ETHUSD` · `NVDA / QQQ`                                     |
-| Pro      | Full spread kept on create/update for Pro; Non-Pro may store assetA only; ad_hoc always accepts full spread |
-
----
-
-### 4.7 `search_tickers` exchange filter
-
-```
-NASDAQ | NYSE | CRYPTO | NYSE Arca | NYSE American
-```
-
----
-
-### 4.8 Optional fields
-
-| Field                          | Enum / limit                            | Used in                                  |
-| ------------------------------ | --------------------------------------- | ---------------------------------------- |
-| `clientLang`                   | `en` · `fr` · `hk` · `ko` · `zh` · `ja` | `technical_analysis`                     |
-| `selectedVisibilityType`       | `public` · `private`                    | `technical_analysis`                     |
-| `q`                            | 1–200 chars                             | `search_tickers`                         |
-| `limit`                        | 1–50 (default 5)                        | `search_tickers`                         |
-| `query`                        | 1–2000 chars                            | `bloomberg-oracle-terminal`              |
-| `userQuestion`                 | 1–10000 chars                           | `technical_analysis`                     |
-| `customizeAgentId` / `agentId` | 1–64 chars                              | `technical_analysis` / `customize-agent` |
-
----
-
-## 5. Common errors and wrong use cases
-
-### 5.1 Error signals
-
-| Signal                             | Meaning                                   | Fix                                                   |
-| ---------------------------------- | ----------------------------------------- | ----------------------------------------------------- |
-| `unauthorized`                     | Bearer auth failed                        | Reconnect TradeOS MCP OAuth                           |
-| `invalid_input`                    | Bad action, missing field, or wrong enum  | Check §4 enums; verify required fields per action     |
-| `search_tickers_failed`            | Search service error                      | Retry; simplify `q`                                   |
-| `customize_agent_failed`           | Agent CRUD error                          | Check payload shape; nested vs flat args              |
-| `build_agent_body_failed`          | Cannot build TA request from agent config | Verify agent exists via `list` / `get`                |
-| `agent_not_found`                  | Unknown `agentId`                         | Use `list` to get valid id                            |
-| `no_permission`                    | Agent belongs to another user             | Use caller's own agents only                          |
-| `agent_fetch_failed`               | DB read error on latest_analysis          | Retry or use `technical_analysis` for fresh run       |
-| `bloomberg_oracle_terminal_failed` | News search error                         | Retry; check balance                                  |
-| balance / forbidden                | Insufficient account balance              | User checks TradeOS quota                             |
-| rate_limit / service_busy          | Quota or lock (~180s per chatId)          | Wait and retry; avoid parallel overload               |
-| 500                                | Server / mcp-call URL issue               | Check endpoint and dev server                         |
-| Missing tool in host               | Wrong MCP server connected                | Confirm TradeOS, not another bridge                   |
-
----
-
-### 5.2 Wrong use cases (do not)
-
-| #      | Wrong                                                                 | Correct                                                                       |
-| ------ | --------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
-| 5.2.1  | `latest_analysis` when user wants **fresh** chart TA                  | `technical_analysis`                                                          |
-| 5.2.2  | `bloomberg-oracle-terminal` for per-symbol K-line / levels            | `technical_analysis`                                                          |
-| 5.2.3  | `search_tickers` for news or “why did X move”                         | `bloomberg-oracle-terminal`                                                   |
-| 5.2.4  | `technical_analysis` for create/update/delete agent                   | `customize-agent`                                                             |
-| 5.2.5  | Invent ticker strings (e.g. `"silver"` instead of `C:XAGUSD`)         | `search_tickers` → exact `ticker`                                             |
-| 5.2.6  | Two separate tickers for a spread in one call                         | One string: `"AAPL / SPY"`                                                    |
-| 5.2.7  | Pass `userId` in any tool args                                        | Omit — OAuth injects it                                                       |
-| 5.2.8  | Pass `title` on agent create                                          | Omit — server generates title                                                 |
-| 5.2.9  | Empty `indicators` on agent update                                    | Send non-empty array or omit field                                            |
-| 5.2.10 | Wrong strategy spelling (e.g. `Trend Analysis` with space)            | Exact enum: `Trend-Analysis`                                                  |
-| 5.2.11 | Abbreviated indicator (e.g. `RSI`, `MACD`)                            | Full name: `Relative Strength Index`, `Moving Average Convergence Divergence` |
-| 5.2.12 | One `technical_analysis` call for 8 spread pairs with no synthesis    | One call per pair, then rank in assistant response                            |
-| 5.2.13 | `mainWindow` = `1D` but strategy = `Scalping-EMA` without user intent | Match strategy to timeframe (see §3.3)                                        |
-
----
-
-### 5.3 Response handling notes
-
-| Tool                                | Read this                  | Ignore / note                                                      |
-| ----------------------------------- | -------------------------- | ------------------------------------------------------------------ |
-| `technical_analysis`                | `streamPreview` (Markdown) | `screenshotHints` are text hints only — no image bytes in MCP JSON |
-| `technical_analysis`                | Check `streamTruncated`    | Long runs may timeout; prior retry text dropped from preview       |
-| `bloomberg-oracle-terminal`         | `data.summary`             | Single JSON blob — not streaming                                   |
-| `customize-agent` `latest_analysis` | Stored report body         | Not a live LLM run                                                 |

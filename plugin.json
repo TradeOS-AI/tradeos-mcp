@@ -2,7 +2,7 @@
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "tradeos",
   "version": "1.0.5",
-  "description": "TradeOS MCP for ChatGPT: agentic technical analysis of XAUUSD, stocks, crypto, and forex, plus ticker search, macro context, and no-code trading agents for 24/7 alerts.",
+  "description": "TradeOS MCP for ChatGPT: ticker search, historical candles, market snapshots, and technical analysis of XAUUSD, stocks, crypto, and forex.",
   "author": {
     "name": "TradeOS-AI",
     "url": "https://www.tradeos.xyz"
@@ -15,16 +15,16 @@
     "com.openai": {
       "interface": {
         "displayName": "TradeOS",
-        "shortDescription": "AI trading analysis and agents",
-        "longDescription": "Connect TradeOS to ChatGPT to search tickers, analyze XAUUSD, stocks, crypto, and forex across multiple timeframes, compare spreads and relative strength, and explore macro and news context. Create and manage custom TradeOS trading agents from natural language. Configured agents can monitor market conditions and surface 24/7 alerts without coding. TradeOS provides analysis for research; trading decisions remain with you.",
+        "shortDescription": "Market data and technical analysis",
+        "longDescription": "Connect TradeOS to ChatGPT to search tickers, retrieve historical price and volume candles, view the latest available market snapshots, and analyze XAUUSD, stocks, crypto, and forex across multiple timeframes. Compare spreads and relative strength, identify support and resistance, and interpret technical indicators. TradeOS provides analysis for research; trading decisions remain with you.",
         "developerName": "TradeOS-AI",
         "category": "Finance",
         "capabilities": [
           "Search market tickers",
+          "Retrieve historical price and volume candles",
+          "View market snapshots",
           "Analyze multi-timeframe charts",
-          "Compare spreads and relative strength",
-          "Explore macro and news context",
-          "Manage custom trading agents"
+          "Compare spreads and relative strength"
         ],
         "websiteURL": "https://www.tradeos.xyz/mcp",
         "supportURL": "https://www.tradeos.xyz/faq",
@@ -33,7 +33,7 @@
         "defaultPrompt": [
           "Analyze XAUUSD across daily and weekly charts with key levels and momentum.",
           "Compare NVDA against SPY for trend and relative strength.",
-          "Summarize the macro news affecting gold and US equities."
+          "Show AAPL's latest available market snapshot and daily candles."
         ],
         "composerIcon": "./assets/logo.png",
         "logo": "./assets/logo.png"

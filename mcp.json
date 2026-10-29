@@ -3,7 +3,7 @@
   "mcpServers": {
     "tradeos": {
       "type": "streamable-http",
-      "url": "https://ai.tradeos.xyz/api/agent/mcp/mcp-call"
+      "url": "https://ai.tradeos.xyz/api/agent/mcp/mcp-call?subset=mini"
     }
   }
 }
