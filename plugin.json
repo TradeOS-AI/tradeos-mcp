@@ -15,7 +15,7 @@
     "com.openai": {
       "interface": {
         "displayName": "TradeOS",
-        "shortDescription": "Market data and technical analysis",
+        "shortDescription": "Market data & chart analysis",
         "longDescription": "Connect TradeOS to ChatGPT to search tickers, retrieve historical price and volume candles, view the latest available market snapshots, and analyze XAUUSD, stocks, crypto, and forex across multiple timeframes. Compare spreads and relative strength, identify support and resistance, and interpret technical indicators. TradeOS provides analysis for research; trading decisions remain with you.",
         "developerName": "TradeOS-AI",
         "category": "Finance",
