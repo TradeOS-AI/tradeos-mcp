@@ -30,7 +30,7 @@ TradeOS exposes **5 MCP tools** on `https://ai.tradeos.xyz`. This skill maps use
 
 1. TradeOS MCP is connected — run `mcp_health` first after OAuth.
 2. Never pass `userId` in tool arguments (OAuth injects it).
-3. For stdio bridge only: `TRADEOS_ACCESS_TOKEN` must be set.
+3. Authenticate through the TradeOS connector's OAuth sign-in; do not read credentials from local files or environment variables.
 
 ---
 
@@ -808,7 +808,7 @@ NASDAQ | NYSE | CRYPTO | NYSE Arca | NYSE American
 | Signal                             | Meaning                                   | Fix                                                   |
 | ---------------------------------- | ----------------------------------------- | ----------------------------------------------------- |
 | TradeOS tool not found             | Connector may be disabled                 | Check that TradeOS is enabled in Settings → Connectors (Claude Code: `/mcp`) |
-| `unauthorized`                     | TradeOS authorization failed              | Guide the user through Connectors → Connect (Claude Code: `/mcp`); for stdio only, refresh `TRADEOS_ACCESS_TOKEN` |
+| `unauthorized`                     | TradeOS authorization failed              | Guide the user through Connectors → Connect (Claude Code: `/mcp`) and sign in again |
 | `invalid_input`                    | Bad action, missing field, or wrong enum  | Check §4 enums; verify required fields per action     |
 | `search_tickers_failed`            | Search service error                      | Retry; simplify `q`                                   |
 | `customize_agent_failed`           | Agent CRUD error                          | Check payload shape; nested vs flat args              |
