@@ -30,7 +30,7 @@ TradeOS exposes **5 MCP tools** on `https://ai.tradeos.xyz`. This skill maps use
 
 1. TradeOS MCP is connected — run `mcp_health` first after OAuth.
 2. Never pass `userId` in tool arguments (OAuth injects it).
-3. Authenticate through the TradeOS connector's OAuth sign-in; do not read credentials from local files or environment variables.
+3. Sign in through the TradeOS connector (Settings → Connectors, or `/mcp` in Claude Code).
 
 ---
 
