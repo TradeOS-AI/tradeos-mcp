@@ -28,7 +28,7 @@
         ],
         "websiteURL": "https://www.tradeos.xyz/mcp",
         "supportURL": "https://www.tradeos.xyz/faq",
-        "privacyPolicyURL": "https://ai.tradeos.xyz/privacy-policy",
+        "privacyPolicyURL": "https://ai.tradeos.xyz/chatgpt-privacy-policy",
         "termsOfServiceURL": "https://ai.tradeos.xyz/terms-of-service",
         "defaultPrompt": [
           "Analyze XAUUSD across daily and weekly charts with key levels and momentum.",

@@ -52,5 +52,5 @@ For a public directory submission, use the **With MCP** path and upload this ZIP
 
 - [TradeOS MCP product page](https://www.tradeos.xyz/mcp)
 - [TradeOS FAQ](https://www.tradeos.xyz/faq)
-- [Privacy policy](https://ai.tradeos.xyz/privacy-policy)
+- [ChatGPT privacy policy](https://ai.tradeos.xyz/chatgpt-privacy-policy)
 - [Terms of service](https://ai.tradeos.xyz/terms-of-service)
